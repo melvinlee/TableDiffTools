@@ -79,8 +79,7 @@ function Compare-Table
         [ValidateNotNullOrEmpty()]
         [string]$DestinationDatabase,
 
-        [Parameter(Mandatory=$true)]
-        [ValidateNotNullOrEmpty()]
+        [Parameter()]
         [string]$DestinationTable,
 
         [Parameter(Mandatory=$true)]
@@ -122,6 +121,12 @@ function Compare-Table
             }else{
                 throw "The file " + $diffScript + " already exists."
             }
+        }
+
+
+        # If destinationTable not define, use sourceTable name
+        if (!$DestinationTable){
+            $DestinationTable = $SourceTable
         }
 
         $SourceSchema = "dbo"
