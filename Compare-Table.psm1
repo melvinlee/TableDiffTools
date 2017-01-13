@@ -31,6 +31,9 @@ Specifies the TableDiff.exe path.
 .PARAMETER OutputLocation
 Specifies the path of the output file.
 
+.PARAMETER Force
+Indicates that output scripts will be overwrite if exists
+
 .EXAMPLE
 Compare-Table -SourceServer "server1" -SourceDatabase "mydb" -SourceTable "customer" -DestinationServer "server2" -DestinationDatabase "mydb" -DestinationTable "customer" -OutputLocation "D:\Result"
 Description
@@ -86,19 +89,15 @@ function Compare-Table
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
-        [string]$TableDiffToolPath="C:\Program Files\Microsoft SQL Server\120\COM"
+        [string]$TableDiffToolPath="C:\Program Files\Microsoft SQL Server\120\COM",
+
+        [Parameter()]
+        [Switch]$Force
+
     )
 
     If ($PSCmdlet.ShouldProcess("SourceServer: [$SourceServer], DestinationServer: [$DestinationServer]","Executing tableDiff.exe") ) 
     {        
-        Write-Verbose "SourceServer: $SourceServer"
-        Write-Verbose "SourceDatabase: $SourceDatabase"
-        Write-Verbose "SourceTable: $SourceTable"
-        Write-Verbose "DestinationServer: $DestinationServer"
-        Write-Verbose "DestinationDatabase: $DestinationDatabase"
-        Write-Verbose "DestinationTable: $DestinationTable"
-        Write-Verbose "OutputLocation: $OutputLocation"
-        Write-Verbose "TableDiffToolPath: $TableDiffToolPath"
 
         If(!(Test-path $OutputLocation))
         {
@@ -118,7 +117,11 @@ function Compare-Table
         # If file exists throw the errror.
         if ((Test-Path $diffScript) -eq $true)
         {
-            throw "The file " + $diffScript + " already exists."
+            if($Force){
+                Remove-Item $diffScript | Out-Null
+            }else{
+                throw "The file " + $diffScript + " already exists."
+            }
         }
 
         $SourceSchema = "dbo"
@@ -139,6 +142,16 @@ function Compare-Table
             $DestinationTable = $temp[1]
         }
 
+        Write-Verbose "SourceServer: $SourceServer"
+        Write-Verbose "SourceDatabase: $SourceDatabase"
+        Write-Verbose "SourceSchema: $SourceSchema"
+        Write-Verbose "SourceTable: $SourceTable"
+        Write-Verbose "DestinationServer: $DestinationServer"
+        Write-Verbose "DestinationDatabase: $DestinationDatabase"
+        Write-Verbose "DestinatioSchema: $DestinationSchema"
+        Write-Verbose "DestinationTable: $DestinationTable"
+        Write-Verbose "OutputLocation: $OutputLocation"
+        Write-Verbose "TableDiffToolPath: $TableDiffToolPath"
 
         & $TableDiffTool -sourceserver $SourceServer `
         -sourcedatabase $SourceDatabase `
