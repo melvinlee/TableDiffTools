@@ -63,7 +63,8 @@ PowerShellVersion = '4.0'
 # NestedModules = @()
 
 # Functions to export from this module
-FunctionsToExport = @('Compare-Table')
+FunctionsToExport = @('Compare-Table',
+                       'Get-Table')
 
 # Cmdlets to export from this module
 CmdletsToExport = '*'
