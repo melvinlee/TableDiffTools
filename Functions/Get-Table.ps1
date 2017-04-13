@@ -23,7 +23,7 @@ function Get-Table
     #>
 
     [CmdletBinding()]
-    [OutputType([string[]])]
+    [OutputType([PSObject])]
     param(
         [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
@@ -69,7 +69,12 @@ function Get-Table
 
             foreach ($table in $tables)
             {
-                $outputArray += $schema.name + "." + $table.name
+                
+                $outputObject = New-Object -TypeName PSObject
+                $outputObject | Add-Member -Name 'Schema' -MemberType Noteproperty -Value $schema.name
+                $outputObject | Add-Member -Name 'Table' -MemberType Noteproperty -Value $table.name
+                $outputArray += $outputObject
+
                 Write-Verbose "Found table $($schema.name).$($table.name)"
             }
         }
