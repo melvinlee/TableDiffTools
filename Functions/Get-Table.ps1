@@ -39,8 +39,11 @@ function Get-Table
     
     try {
         
-        Import-Module "sqlps" -DisableNameChecking
-
+        if (-Not (Get-Module -Name SQLASCMDLETS))
+        {
+            Import-Module "sqlps" -DisableNameChecking
+        }
+        
         Write-Verbose "Connecting to server $Server ..."
         Write-Verbose "Querying $Database database schema ..."
 
@@ -51,6 +54,8 @@ function Get-Table
         foreach ($schema in $schemas)
         {           
 
+            Write-Progress -Activity "Processing database $Database" -status "Reading schema $($schema.name)" -percentComplete ($schemas.IndexOf($schema) / $schemas.count*100)
+            
             if($IsReplicated){
 
                 Write-Verbose "Querying replicated table in $($schema.name) ..."
@@ -66,9 +71,7 @@ function Get-Table
                 | Where-Object {$_.schema -eq $schema.name} | Select-Object name
 
             }
-
-            Write-Progress -Activity "Processing database $Database" -status "Reading schema $($schema.name)" -percentComplete ($schemas.IndexOf($schema) / $schemas.count*100)
-            
+ 
             foreach ($table in $tables)
             {
                 
