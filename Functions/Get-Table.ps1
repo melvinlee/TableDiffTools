@@ -13,6 +13,9 @@ function Get-Table
     .PARAMETER Database
     Specifies the database name.
 
+    .PARAMETER FilterBySchema
+    Filter table by schema.
+
     .PARAMETER IsReplicated
     Identicate to retrieve replicated table only.
 
@@ -34,6 +37,9 @@ function Get-Table
         [string]$Database,
         
         [Parameter()]
+        [string[]]$FilterBySchema,
+        
+        [Parameter()]
         [switch]$IsReplicated
     )          
     
@@ -46,8 +52,17 @@ function Get-Table
         
         Write-Verbose "Connecting to server $Server ..."
         Write-Verbose "Querying $Database database schema ..."
+                
+        # filter schema if filter exists
+        if($FilterBySchema -gt 0)
+        {
+             $schemas = Get-ChildItem SQLSERVER:\SQL\STCMSDBS6V.RWS-DEV.RWSENTOSA.COM\Default\Databases\scvcmsstapp\schemas\ | Where-Object {$FilterBySchema -CContains $_.name } | Select-Object name
+        }
+        else
+        {
+            $schemas = Get-ChildItem SQLSERVER:\SQL\$Server\Default\Databases\$Database\schemas\ | Select-Object name
+        }
 
-        $schemas = Get-ChildItem SQLSERVER:\SQL\$Server\Default\Databases\$Database\schemas\ | Select-Object name
 
         $outputArray = @()
 
