@@ -67,9 +67,13 @@ function Get-Table
 
             }
 
+            Write-Progress -Activity "Processing database $Database" -status "Reading schema $($schema.name)" -percentComplete ($schemas.IndexOf($schema) / $schemas.count*100)
+            
             foreach ($table in $tables)
             {
                 
+                Write-Progress -Activity "Processing database $Database" -status "Reading table $($table.name)" -percentComplete ($schemas.IndexOf($schema) / $schemas.count*100)
+
                 $outputObject = New-Object -TypeName PSObject
                 $outputObject | Add-Member -Name 'Schema' -MemberType Noteproperty -Value $schema.name
                 $outputObject | Add-Member -Name 'Table' -MemberType Noteproperty -Value $table.name
