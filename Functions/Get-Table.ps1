@@ -56,7 +56,7 @@ function Get-Table
         # filter schema if filter exists
         if($FilterBySchema -gt 0)
         {
-             $schemas = Get-ChildItem SQLSERVER:\SQL\STCMSDBS6V.RWS-DEV.RWSENTOSA.COM\Default\Databases\scvcmsstapp\schemas\ | Where-Object {$FilterBySchema -CContains $_.name } | Select-Object name
+             $schemas = Get-ChildItem SQLSERVER:\SQL\$Server\Default\Databases\$Database\schemas\ | Where-Object {$FilterBySchema -CContains $_.name } | Select-Object name
         }
         else
         {
