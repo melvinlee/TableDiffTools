@@ -69,6 +69,9 @@ function Compare-Table
 
     [CmdletBinding(SupportsShouldProcess=$true, DefaultParameterSetName="BySourceTable")]
     param(
+        [Parameter(ValueFromPipeline,ParameterSetName='ByTables')]
+        [Object]$Tables,
+
         [Parameter(ParameterSetName='ByInputTable')]
         [string[]]$InputTable,
 
@@ -79,11 +82,11 @@ function Compare-Table
         [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
         [string]$SourceDatabase,
-
+        
         [Parameter(Mandatory=$true,ParameterSetName='BySourceTable')]
         [ValidateNotNullOrEmpty()]
         [string]$SourceTable,
-        
+
         [Parameter(Mandatory=$true)]
         [ValidateNotNullOrEmpty()]
         [string]$DestinationServer,
@@ -108,45 +111,35 @@ function Compare-Table
 
     )
 
-    If ($PSCmdlet.ShouldProcess("SourceServer: [$SourceServer], DestinationServer: [$DestinationServer]","Executing tableDiff.exe") ) 
-    {        
+    Begin
+    {
+    
+    }
 
-        $OverwriteFixSql = $false
+    Process
+    {
 
-        If($Force){
-            $OverwriteFixSql = $true
-        }
-               
-        If($PSCmdlet.ParameterSetName -eq "BySourceTable")
-        {
+        If ($PSCmdlet.ShouldProcess("SourceServer: [$SourceServer], DestinationServer: [$DestinationServer]","Executing tableDiff.exe") ) 
+        {        
 
-             # If destinationTable not define, use sourceTable name
-            If (!$DestinationTable){
-                $DestinationTable = $SourceTable
+            $OverwriteFixSql = $false
+
+            If($Force){
+                $OverwriteFixSql = $true
             }
-
-            Try{
                 
-                Invoke-TableDiff -SourceServer $SourceServer -SourceDatabase $SourceDatabase -SourceTable $SourceTable `
-                -DestinationServer $DestinationServer -DestinationDatabase $DestinationDatabase -DestinationTable $DestinationTable `
-                -OutputLocation $OutputLocation -TableDiffTool $TableDiffTool -OverwriteFixSql $OverwriteFixSql
+            If($PSCmdlet.ParameterSetName -eq "BySourceTable")
+            {
 
-            }Catch{
-                
-                Write-Error "Error on Invoke-TableDiff. $_.Exception.Message"
+                # If destinationTable not define, use sourceTable name
+                If (!$DestinationTable){
+                    $DestinationTable = $SourceTable
+                }
 
-            }
-
-        }
-        ElseIf($PSCmdlet.ParameterSetName -eq "ByInputTable")
-        {
-
-              foreach($table in $InputTable){
-                
                 Try{
                     
-                    Invoke-TableDiff -SourceServer $SourceServer -SourceDatabase $SourceDatabase -SourceTable $table `
-                    -DestinationServer $DestinationServer -DestinationDatabase $DestinationDatabase -DestinationTable $table `
+                    Invoke-TableDiff -SourceServer $SourceServer -SourceDatabase $SourceDatabase -SourceTable $SourceTable `
+                    -DestinationServer $DestinationServer -DestinationDatabase $DestinationDatabase -DestinationTable $DestinationTable `
                     -OutputLocation $OutputLocation -TableDiffTool $TableDiffTool -OverwriteFixSql $OverwriteFixSql
 
                 }Catch{
@@ -156,9 +149,42 @@ function Compare-Table
                 }
 
             }
+            ElseIf($PSCmdlet.ParameterSetName -eq "ByInputTable")
+            {
+
+                foreach($table in $InputTable){
+                    
+                    Try{
+                        
+                        Invoke-TableDiff -SourceServer $SourceServer -SourceDatabase $SourceDatabase -SourceTable $table `
+                        -DestinationServer $DestinationServer -DestinationDatabase $DestinationDatabase -DestinationTable $table `
+                        -OutputLocation $OutputLocation -TableDiffTool $TableDiffTool -OverwriteFixSql $OverwriteFixSql
+
+                    }Catch{
+                        
+                        Write-Error "Error on Invoke-TableDiff. $_.Exception.Message"
+
+                    }
+
+                }
+
+            }
+            ElseIf($PSCmdlet.ParameterSetName -eq "ByTables")
+            {
+                Try{
+                    
+                    Invoke-TableDiff -SourceServer $SourceServer -SourceDatabase $SourceDatabase -SourceTable "$($Tables.Schema).$($Tables.Table)" `
+                    -DestinationServer $DestinationServer -DestinationDatabase $DestinationDatabase -DestinationTable "$($Tables.Schema).$($Tables.Table)" `
+                    -OutputLocation $OutputLocation -TableDiffTool $TableDiffTool -OverwriteFixSql $OverwriteFixSql
+
+                }Catch{
+                    
+                    Write-Error "Error on Invoke-TableDiff. $_.Exception.Message"
+
+                }
+            }
 
         }
-
-    }
+    }    
 }
 
