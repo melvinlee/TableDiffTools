@@ -69,7 +69,7 @@ function Get-Table
         foreach ($schema in $schemas)
         {           
 
-            if($schemas.length > 1 )
+            if($schemas.length -gt 1 )
             {
                 Write-Progress -Activity "Processing database $Database" -status "Reading schema $($schema.name)" -percentComplete ($schemas.IndexOf($schema) / $schemas.count*100)
             }
@@ -93,7 +93,7 @@ function Get-Table
             foreach ($table in $tables)
             {
                 
-                if($tables.length > 1 )
+                if($tables.length -gt 1 )
                 {
                     Write-Progress -Activity "Processing database $Database" -status "Reading table $($table.name)" -percentComplete ($schemas.IndexOf($schema) / $schemas.count*100)
                 }
