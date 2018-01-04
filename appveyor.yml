@@ -1,0 +1,25 @@
+skip_commits:
+  files:
+    - README.md
+
+image: WMF 5
+
+install:
+  - ps: Install-PackageProvider -Name NuGet -Force
+  - ps: Install-Module -Name PSScriptAnalyzer -Force
+
+build: off
+
+- ps: |
+    # Execute the script analyzer
+    $results = Invoke-ScriptAnalyzer -Path .\functions -Recurse | where severity -eq "Error"
+    # Format the results
+    $header = "<testsuite tests=`"$($results.Count)`">" 
+    $body = $results | ForEach-Object {"<testcase classname=`"analyzer`" name=`"$($_.RuleName)`"><failure type=`"$($_.ScriptName)`">$($_.Message)</failure></testcase>"}
+    $footer = "</testsuite>"
+    $header + $body +$footer | out-file .\TestsResults.xml
+    # Upload results
+    $wc = New-Object 'System.Net.WebClient'
+    $wc.UploadFile("https://ci.appveyor.com/api/testresults/junit/$($env:APPVEYOR_JOB_ID)", (Resolve-Path .\TestsResults.xml))
+    # Fail if thre are issues
+    if($results.Count -gt 0){throw "ScriptAnalyzer found $($results.Count) issues"}
