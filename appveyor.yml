@@ -10,6 +10,7 @@ install:
 
 build: off
 
+test_script:
   - ps: |
       # Execute the script analyzer
       $results = Invoke-ScriptAnalyzer -Path .\functions -Recurse | where severity -eq "Error"
