@@ -71,7 +71,7 @@ function Get-Table
 
             if($schemas.length -gt 1 )
             {
-                Write-Progress -Activity "Processing database $Database" -status "Reading schema $($schema.name)" -percentComplete ($schemas.IndexOf($schema) / $schemas.count*100)
+                Write-Progress -Id 1 -Activity "Processing database $Database" -status "Query schema $($schema.name)" -percentComplete ($schemas.IndexOf($schema) / $schemas.count*100)
             }
 
             if($IsReplicated){
@@ -95,7 +95,7 @@ function Get-Table
                 
                 if($tables.length -gt 1 )
                 {
-                    Write-Progress -Activity "Processing database $Database" -status "Reading table $($table.name)" -percentComplete ($schemas.IndexOf($schema) / $schemas.count*100)
+                    Write-Progress -Id 2 -ParentId 1 -Activity "Processing schema $($schema.name)" -status "Reading table $($table.name)" -percentComplete ($tables.IndexOf($table) / $tables.count*100)
                 }
                 
                 $outputObject = New-Object -TypeName PSObject
