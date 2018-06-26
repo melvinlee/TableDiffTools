@@ -6,11 +6,15 @@ Please ensure you're running PowerShell version 3.0+
 
 ## Import Module
 
-    Import-Module .\TableDiffTools.psd1
+```Powershell
+PS C:\>Import-Module .\TableDiffTools.psd1
+```
 
 To verify the module is loaded
 
-    Get-Module -Name "TableDiffTools"
+```Powershell
+PS C:\>Get-Module -Name "TableDiffTools"
+```
 
 ## List of commands
 
@@ -25,45 +29,55 @@ The following is a list of commands which are available
 ## Usage
 
 To retrieve tables by specific schema
-    
-    Get-Table -Server <server> -Database <database> -FilterBySchema  "SI","SM" 
+
+```Powershell
+PS C:\>Get-Table -Server <server> -Database <database> -FilterBySchema  "Foo","Bar" 
+```
 
 To retrieve tables participate in replication only
 
-    Get-Table -Server <server> -Database <database> -IsReplicated 
+```Powershell
+PS C:\>Get-Table -Server <server> -Database <database> -IsReplicated 
+```
 
 To compare single table
 
-    Compare-Table `
-    -SourceTable "SI.Config" `
-    -SourceServer <sourceserver> `
-    -SourceDatabase <sourcedatabase> `
+```Powershell
+PS C:\>Compare-Table `
+    -SourceTable "Foo.Config" `
+    -SourceServer "<sourceserver>" `
+    -SourceDatabase "<sourcedatabase>" `
     -TableDiffTool "C:\Program Files\Microsoft SQL Server\120\COM\tablediff.exe" `
-    -DestinationServer <destServer> `
-    -DestinationDatabase <destdatabase> `
-    -OutputLocation D:\Tablediff
+    -DestinationServer "<destServer>" `
+    -DestinationDatabase "<destdatabase>" `
+    -OutputLocation "D:\Tablediff"
+```
 
 To compare tables by populating table detail from database using Get-Table cmdlet
 
-     $tables = Get-Table -Server <server> -Database <database> -IsReplicated 
+```Powershell
+PS C:\>$tables = Get-Table -Server <server> -Database <database> -IsReplicated 
 
-     $tables | Compare-Table `
-    -SourceServer <sourceserver> `
-    -SourceDatabase <sourcedatabase> `
+PS C:\>$tables | Compare-Table `
+    -SourceServer "<sourceserver>" `
+    -SourceDatabase "<sourcedatabase>" `
     -TableDiffTool "C:\Program Files\Microsoft SQL Server\120\COM\tablediff.exe" `
-    -DestinationServer <destServer> `
-    -DestinationDatabase <destdatabase> `
-    -OutputLocation D:\Tablediff
+    -DestinationServer "<destServer>" `
+    -DestinationDatabase "<destdatabase>" `
+    -OutputLocation "D:\Tablediff"
+```
 
 To compare tables by specific tables name
 
-     $table = @('SI.GameType','SI.Config')
+```Powershell
+PS C:\>$table = @('Foo.Info','Bar.Config')
 
-     $tables | Compare-Table `
+ PS C:\>$tables | Compare-Table `
     -InputTable $table
-    -SourceServer <sourceserver> `
-    -SourceDatabase <sourcedatabase> `
+    -SourceServer "<sourceserver>" `
+    -SourceDatabase "<sourcedatabase>" `
     -TableDiffTool "C:\Program Files\Microsoft SQL Server\120\COM\tablediff.exe" `
-    -DestinationServer <destServer> `
-    -DestinationDatabase <destdatabase> `
-    -OutputLocation D:\Tablediff
+    -DestinationServer "<destServer>" `
+    -DestinationDatabase "<destdatabase>" `
+    -OutputLocation "D:\Tablediff"
+```
